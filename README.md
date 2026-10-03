@@ -22,4 +22,6 @@ Odpočinková klikací hra běžící jako podsložka domény `alba-rosa.cz`.
 
 ## Nasazení
 
+Nasazuje se **automaticky přes GitHub Actions** (workflow `Deploy`) po každém pushi do `main`. Nahrávají se jen změněné soubory přes vlastní FTP účet `w237642_ghpopclick`, který vidí jen složku `/popclicker/`; výsledek přijde na Discord. Co se nenahrává a co je jen na serveru, je v `.github/deploy.json`.
+
 FTP na Wedos, podsložka `/popclicker/`.
