@@ -32,6 +32,7 @@ jobs:
 
       - name: Discord
         if: always()
+        continue-on-error: true
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           STATUS: ${{ job.status }}
@@ -68,5 +69,14 @@ jobs:
           }
           req = urllib.request.Request(os.environ["DISCORD_WEBHOOK"], json.dumps(body).encode(),
                                        {"Content-Type": "application/json", "User-Agent": "deploy"})
-          urllib.request.urlopen(req, timeout=20)
+          import time, urllib.error
+          for attempt in range(5):
+              try:
+                  urllib.request.urlopen(req, timeout=20)
+                  break
+              except urllib.error.HTTPError as e:
+                  if e.code != 429:
+                      raise
+                  # Discord rate limit, shared with the GitHub webhook on the same channel
+                  time.sleep(float(e.headers.get("Retry-After") or 2) + 1)
           PY
