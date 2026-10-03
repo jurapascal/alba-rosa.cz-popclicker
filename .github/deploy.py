@@ -52,7 +52,10 @@ def connect():
             ftp = ReusedSslFTP(timeout=60)
             ftp.connect(os.environ["FTP_HOST"], int(os.environ.get("FTP_PORT", "21")))
             ftp.login(os.environ["FTP_USER"], os.environ["FTP_PASSWORD"])
-            ftp.prot_p()
+            # FTP_PROT=C: TLS only on the control channel (WEDOS w17 never sends 226
+            # after an encrypted data transfer); integrity is checked by SIZE anyway
+            if os.environ.get("FTP_PROT", "P") != "C":
+                ftp.prot_p()
             ftp.set_pasv(True)
             return ftp
         except ftplib.error_perm as e:
